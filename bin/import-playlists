@@ -9,15 +9,16 @@ source "${_dir}/share.sh"
 unset _dir
 
 SCRIPT_NAME="$0"
+CMUS_DISPLAY="${CLRCODE}cmus${CLRRS}"
 
 ARG_DIR=
 
+check "find"
 check "cmus"
 check "cmus-remote"
 
 function gen_help_text {
     local script_name_display="$(clr "${CLR_CODE[@]}")${SCRIPT_NAME}$(clrrs)"
-    local cmus_display="${CLRCODE}cmus${CLRRS}"
     local help_txt
 
     read -rd '' help_txt <<- HELP_END
@@ -29,8 +30,8 @@ ${CLRHEADER}SYNOPSIS${CLRRS}
 
 ${CLRHEADER}DESCRIPTION${CLRRS}
     Using ${CLRCODE}cmus-remote${CLRRS}, first delete all existing
-    ${cmus_display} playlists, then import all playlist files
-    in ${CLRARG}PLAYLISTS_DIR${CLRRS} (recursively) into ${cmus_display}.
+    ${CMUS_DISPLAY} playlists, then import all playlist files
+    in ${CLRARG}PLAYLISTS_DIR${CLRRS} (recursively) into ${CMUS_DISPLAY}.
 
 ${CLRHEADER}ARGUMENTS${CLRRS}
     ${CLRARG}PLAYLISTS_DIR${CLRRS}
@@ -75,10 +76,26 @@ function verify_args {
     check_dir "$ARG_DIR"
 }
 
+function check_cmus_running {
+    cmus-remote -Q &> /dev/null \
+        || err "${CMUS_DISPLAY} isn't running"
+}
+
+function import_playlists {
+    # Switch to view 3 (playlists)
+    cmus-remote -C "view 3"
+
+    local playlist_file
+    while IFS= read -rd '' playlist_file; do
+        echo "$playlist_file"
+    done < <(find "$ARG_DIR" -type f -iname "*.${PLAYLIST_EXT}" -print0)
+}
+
 function main {
     parse_args "$@"
     verify_args
-    # import_playlists
+    check_cmus_running
+    import_playlists
 }
 
 main "$@"
