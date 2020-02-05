@@ -26,7 +26,7 @@ function gen_help_text {
 $script_name_display
 
 ${clr_header}SYNOPSIS${clr_rs}
-    $script_name_display ${clr_arg}[-d N] [-s] DIRECTORY${clr_rs}
+    $script_name_display ${clr_arg}[-d N] DIRECTORY${clr_rs}
     $script_name_display ${clr_arg}--help|-h${clr_rs}
 
 ${clr_header}DESCRIPTION${clr_rs}
@@ -41,10 +41,6 @@ ${clr_header}ARGUMENTS${clr_rs}
         with audio files.
 
 ${clr_header}OPTIONS${clr_rs}
-    ${clr_arg}--self, -s${clr_rs}
-        If given, then also create a playlist for ${clr_arg}DIRECTORY${clr_rs}.
-        This playlist will contain ALL audio files from all nested directories.
-
     ${clr_arg}--depth, -d DEPTH${clr_rs}
         ${clr_bold}DEFAULT: ${clr_code}1${clr_rs}
         How deeply to create playlists inside each directory.
@@ -56,7 +52,7 @@ ${clr_header}OPTIONS${clr_rs}
         with ${clr_code}-d 2${clr_rs} a separate ${clr_code}TobyFox-Undertale${clr_rs}
         playlist will be created, otherwise no playlist
         will be created for the nested directory.
-        Note, that a depth of ${clr_code}0${clr_rs} will create no playlists at all.
+        Note, that a depth of ${clr_code}0${clr_rs} will only create a playlist for ${clr_arg}DIRECTORY${clr_rs}.
 HELP_END
 
     echo "$help_txt"
