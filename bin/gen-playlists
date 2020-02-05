@@ -50,6 +50,9 @@ ${clr_header}DESCRIPTION${CLRRS}
     inside the given ${clr_arg}SRC_DIR${CLRRS}.
     The playlist file is simply a text file with each line
     being the full path to an audio file inside the directory (recursively).
+    Looks for audio files with the extensions:
+        ${CLRCODE}.$( join_by " ." "${AUDIO_EXTS[@]}" )${CLRRS}
+    Generated playlist files have the extension: ${CLRCODE}.${PLAYLIST_EXT}${CLRRS}
 
 ${clr_header}ARGUMENTS${CLRRS}
     ${clr_arg}SRC_DIR${CLRRS}
@@ -131,13 +134,8 @@ function verify_args {
 }
 
 function gen_playlists {
-    # Generate root playlist
-    # echo "ROOT"
-    # gen_playlist_from_dir "$ARG_SRC_DIR"
-
     local playlist_src
     while IFS= read -rd '' playlist_src; do
-        # echo -e "\n---\n$playlist_src"
         gen_playlist_from_dir "$playlist_src"
     done < <(find "$ARG_SRC_DIR" -maxdepth "${OPT_DEPTH}" -type d -print0)
 }
@@ -148,15 +146,9 @@ function gen_playlist_from_dir {
     local playlist_name="${playlist_src/$src_dir_repl/}"
     local playlist_dest="${ARG_DEST_DIR}/${playlist_name}.${PLAYLIST_EXT}"
 
-    # echo "SRC : $playlist_src"
-    # echo "repl: $src_dir_repl"
-    # echo "NAME: $playlist_name"
-    # echo "DEST: $playlist_dest"
-
     mkdir -p "$( dirname "$playlist_dest" )"
 
     local audio_files
-
     # shellcheck disable=SC2086
     mapfile -t audio_files < <(
         find "${playlist_src}" \
@@ -164,6 +156,7 @@ function gen_playlist_from_dir {
             \( ${AUDIO_EXTS_FIND} \)
     )
 
+    # Write playlist files
     if [ ${#audio_files[@]} -gt 0 ]; then
         msg "Generating playlist ${CLRCODE}${playlist_name}${CLRRS}"
         join_by $'\n' "${audio_files[@]}" > "$playlist_dest"
