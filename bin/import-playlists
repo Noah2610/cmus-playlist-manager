@@ -69,16 +69,16 @@ function parse_args {
     done
 }
 
-function main {
-    parse_args "$@"
-    verify_args
-    # import_playlists
-}
-
 function verify_args {
     [ -z "$ARG_DIR" ] \
         && err "${CLRCODE}PLAYLISTS_DIR${CLRRS} must be given (first argument)"
     check_dir "$ARG_DIR"
+}
+
+function main {
+    parse_args "$@"
+    verify_args
+    # import_playlists
 }
 
 main "$@"

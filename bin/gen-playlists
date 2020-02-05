@@ -113,12 +113,6 @@ function parse_args {
     done
 }
 
-function main {
-    parse_args "$@"
-    verify_args
-    gen_playlists
-}
-
 function verify_args {
     [ -z "$ARG_SRC_DIR" ] \
         && err "${CLRCODE}SRC_DIR${CLRRS} must be given (first argument)"
@@ -159,6 +153,12 @@ function gen_playlist_from_dir {
         msg "Generating playlist ${CLRCODE}${playlist_name}${CLRRS}"
         join_by $'\n' "${audio_files[@]}" > "$playlist_dest"
     fi
+}
+
+function main {
+    parse_args "$@"
+    verify_args
+    gen_playlists
 }
 
 main "$@"
