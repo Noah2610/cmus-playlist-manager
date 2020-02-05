@@ -3,16 +3,10 @@
 # Each directory will become a playlist,
 # with its members being all audio files found within the directory (recursively).
 
-# shellcheck source=./util.sh disable=SC2155
-
-set -e
-
-function _dl_util_sh {
-    local UTIL_VERSION="v2.1.1"
-    local dir="$( dirname "$1" )"
-    [ -f "${dir}/util.sh" ] || bash "${dir}/download-util.sh" "$UTIL_VERSION" || exit 1
-    source "${dir}/util.sh"
-}; _dl_util_sh "$0"
+# shellcheck source=./share.sh disable=SC2155
+_dir="$( dirname "$0" )"
+source "${_dir}/share.sh"
+unset _dir
 
 SCRIPT_NAME="$0"
 CLRCODE="$( clr "${CLR_CODE[@]}" )"
@@ -91,6 +85,8 @@ function print_help_and_exit {
 }
 
 function parse_args {
+    [ $# -eq 0 ] && print_help_and_exit
+
     while [ $# -gt 0 ]; do
         case "$1" in
             "--help"|"-h")
