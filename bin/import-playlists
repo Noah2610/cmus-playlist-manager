@@ -10,6 +10,7 @@ unset _dir
 
 SCRIPT_NAME="$0"
 CMUS_DISPLAY="${CLRCODE}cmus${CLRRS}"
+CMUS_CMD_DELAY="0.001s"
 
 ARG_DIR=
 ARG_DELETE=0
@@ -146,12 +147,14 @@ function import_playlist_from_file {
     # shellcheck disable=SC2178
     local cmd="
         pl-import $playlist_file
-        /${playlist_name}
+        /${playlist_name}.${PLAYLIST_EXT}
         pl-rename $playlist_name
     "
 
     # shellcheck disable=SC2128
     echo "$cmd" | cmus-remote
+
+    sleep "$CMUS_CMD_DELAY"
 }
 
 function cmus_switch_to_playlists_view {
