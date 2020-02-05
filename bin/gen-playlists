@@ -63,16 +63,10 @@ HELP_TXT="$( gen_help_text )"
 echo "$HELP_TXT"
 exit
 
-function update_playlists {
+function gen_playlists {
     local playlist_dir="$1"
 
     check_dir "$playlist_dir"
-
-
 }
 
-function generate_playlist {
-    echo
-}
-
-update_playlists "$@"
+gen_playlists "$@"
