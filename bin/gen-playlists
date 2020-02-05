@@ -26,51 +26,49 @@ check "find"
 
 function gen_help_text {
     local script_name_display="$(clr "${CLR_CODE[@]}")${SCRIPT_NAME}$(clrrs)"
-    local clr_header="$( clr yellow default bold )"
-    local clr_arg="$( clrfg cyan )"
     local help_txt
 
     read -rd '' help_txt <<- HELP_END
 $script_name_display
 
-${clr_header}SYNOPSIS${CLRRS}
-    $script_name_display ${clr_arg}[-d N] SRC_DIR DEST_DIR${CLRRS}
-    $script_name_display ${clr_arg}--help|-h${CLRRS}
+${CLRHEADER}SYNOPSIS${CLRRS}
+    $script_name_display ${CLRARG}[-d N] SRC_DIR DEST_DIR${CLRRS}
+    $script_name_display ${CLRARG}--help|-h${CLRRS}
 
-${clr_header}DESCRIPTION${CLRRS}
+${CLRHEADER}DESCRIPTION${CLRRS}
     Generates a playlist text file for each directory
-    inside the given ${clr_arg}SRC_DIR${CLRRS}.
+    inside the given ${CLRARG}SRC_DIR${CLRRS}.
     The playlist file is simply a text file with each line
     being the full path to an audio file inside the directory (recursively).
     Looks for audio files with the extensions:
         ${CLRCODE}.$( join_by " ." "${AUDIO_EXTS[@]}" )${CLRRS}
     Generated playlist files have the extension: ${CLRCODE}.${PLAYLIST_EXT}${CLRRS}
 
-${clr_header}ARGUMENTS${CLRRS}
-    ${clr_arg}SRC_DIR${CLRRS}
+${CLRHEADER}ARGUMENTS${CLRRS}
+    ${CLRARG}SRC_DIR${CLRRS}
         Path to the directory containing directories
         with audio files for which to create playlists.
 
-    ${clr_arg}DEST_DIR${CLRRS}
+    ${CLRARG}DEST_DIR${CLRRS}
         Path to the directory where the generated playlist
         files should be placed in.
 
-${clr_header}OPTIONS${CLRRS}
-    ${clr_arg}--help, -h${CLRRS}
+${CLRHEADER}OPTIONS${CLRRS}
+    ${CLRARG}--help, -h${CLRRS}
         Print this help text and exit.
 
-    ${clr_arg}--depth, -d DEPTH${CLRRS}
+    ${CLRARG}--depth, -d DEPTH${CLRRS}
         ${CLRBOLD}DEFAULT: ${CLRCODE}1${CLRRS}
         How deeply to create playlists inside each directory.
         For example, let's say we have a ${CLRCODE}TobyFox/${CLRRS} directory,
-        inside the ${clr_arg}SRC_DIR${CLRRS}; the script would create
+        inside the ${CLRARG}SRC_DIR${CLRRS}; the script would create
         a playlist with all audio files found in the
         directory (recursively). But let's say we also
         have a ${CLRCODE}TobyFox/Undertale/${CLRRS} directory;
         with ${CLRCODE}-d 2${CLRRS} a separate ${CLRCODE}TobyFox/Undertale${CLRRS}
         playlist will be created, otherwise no playlist
         will be created for the nested directory.
-        Note, that a depth of ${CLRCODE}0${CLRRS} will only create a playlist for ${clr_arg}SRC_DIR${CLRRS}.
+        Note, that a depth of ${CLRCODE}0${CLRRS} will only create a playlist for ${CLRARG}SRC_DIR${CLRRS}.
 HELP_END
 
     echo "$help_txt"

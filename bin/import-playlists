@@ -1,10 +1,20 @@
 #!/bin/bash
+# Using `cmus-remote`, removes all existing cmus playlists
+# and imports new playlists from the files in the given directory (first argument).
 
 # shellcheck source=./share.sh disable=SC2155
-SCRIPT_NAME="$( realpath "$0" )"
-_dir="$( dirname "$SCRIPT_NAME" )"
+SCRIPT_PATH="$( realpath "$0" )"
+_dir="$( dirname "$SCRIPT_PATH" )"
 source "${_dir}/share.sh"
 unset _dir
 
+SCRIPT_NAME="$0"
+
 check "cmus"
 check "cmus-remote"
+
+function main {
+    echo
+}
+
+main "$@"

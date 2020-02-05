@@ -12,5 +12,7 @@ function _dl_util_sh {
 
 export CLRCODE="$( clr "${CLR_CODE[@]}" )"
 export CLRBOLD="$( clrattr "bold" )"
+export CLRHEADER="$( clr yellow default bold )"
+export CLRARG="$( clrfg cyan )"
 export CLRRS="$( clrrs )"
 export PLAYLIST_EXT="pl"
