@@ -1,0 +1,82 @@
+#!/bin/bash
+# Generates playlist text files for all directories in the given path (first argument).
+# Each directory will become a playlist,
+# with its members being all audio files found within the directory (recursively).
+
+# shellcheck source=./util.sh disable=SC2155
+function _dl_util_sh {
+    local UTIL_VERSION="v2.0.0"
+    local dir="$( dirname "$1" )"
+    [ -f "${dir}/util.sh" ] || bash "${dir}/download-util.sh" "$UTIL_VERSION" || exit 1
+    source "${dir}/util.sh"
+}; _dl_util_sh "$0"
+
+SCRIPT_NAME="$0"
+
+function gen_help_text {
+    local script_name_display="$(clr "${CLR_CODE[@]}")${SCRIPT_NAME}$(clrrs)"
+    local clr_header="$( clr yellow default bold )"
+    local clr_arg="$( clrfg cyan )"
+    local clr_code="$( clr "${CLR_CODE[@]}" )"
+    local clr_bold="$( clrattr bold )"
+    local clr_rs="$( clrrs )"
+    local help_txt
+
+    read -rd '' help_txt <<- HELP_END
+$script_name_display
+
+${clr_header}SYNOPSIS${clr_rs}
+    $script_name_display ${clr_arg}[-d N] [-s] DIRECTORY${clr_rs}
+    $script_name_display ${clr_arg}--help|-h${clr_rs}
+
+${clr_header}DESCRIPTION${clr_rs}
+    Generates a playlist text file for each directory
+    inside the given ${clr_arg}DIRECTORY${clr_rs}.
+    The playlist file is simply a text file with each line
+    being the full path to an audio file inside the directory (recursively).
+
+${clr_header}ARGUMENTS${clr_rs}
+    ${clr_arg}DIRECTORY${clr_rs}
+        Path to a directory containing directories
+        with audio files.
+
+${clr_header}OPTIONS${clr_rs}
+    ${clr_arg}--self, -s${clr_rs}
+        If given, then also create a playlist for ${clr_arg}DIRECTORY${clr_rs}.
+        This playlist will contain ALL audio files from all nested directories.
+
+    ${clr_arg}--depth, -d DEPTH${clr_rs}
+        ${clr_bold}DEFAULT: ${clr_code}1${clr_rs}
+        How deeply to create playlists inside each directory.
+        For example, let's say we have a ${clr_code}TobyFox/${clr_rs} directory,
+        inside the ${clr_arg}DIRECTORY${clr_rs}; the script would create
+        a playlist with all audio files found in the
+        directory (recursively). But let's say we also
+        have a ${clr_code}TobyFox/Undertale/${clr_rs} directory;
+        with ${clr_code}-d 2${clr_rs} a separate ${clr_code}TobyFox-Undertale${clr_rs}
+        playlist will be created, otherwise no playlist
+        will be created for the nested directory.
+        Note, that a depth of ${clr_code}0${clr_rs} will create no playlists at all.
+HELP_END
+
+    echo "$help_txt"
+}
+
+HELP_TXT="$( gen_help_text )"
+
+echo "$HELP_TXT"
+exit
+
+function update_playlists {
+    local playlist_dir="$1"
+
+    check_dir "$playlist_dir"
+
+
+}
+
+function generate_playlist {
+    echo
+}
+
+update_playlists "$@"
