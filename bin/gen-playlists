@@ -5,7 +5,7 @@
 
 # shellcheck source=./util.sh disable=SC2155
 function _dl_util_sh {
-    local UTIL_VERSION="v2.0.0"
+    local UTIL_VERSION="v2.1.0"
     local dir="$( dirname "$1" )"
     [ -f "${dir}/util.sh" ] || bash "${dir}/download-util.sh" "$UTIL_VERSION" || exit 1
     source "${dir}/util.sh"
@@ -26,42 +26,50 @@ function gen_help_text {
 $script_name_display
 
 ${clr_header}SYNOPSIS${clr_rs}
-    $script_name_display ${clr_arg}[-d N] DIRECTORY${clr_rs}
+    $script_name_display ${clr_arg}[-d N] SRC_DIR DEST_DIR${clr_rs}
     $script_name_display ${clr_arg}--help|-h${clr_rs}
 
 ${clr_header}DESCRIPTION${clr_rs}
     Generates a playlist text file for each directory
-    inside the given ${clr_arg}DIRECTORY${clr_rs}.
+    inside the given ${clr_arg}SRC_DIR${clr_rs}.
     The playlist file is simply a text file with each line
     being the full path to an audio file inside the directory (recursively).
 
 ${clr_header}ARGUMENTS${clr_rs}
-    ${clr_arg}DIRECTORY${clr_rs}
-        Path to a directory containing directories
-        with audio files.
+    ${clr_arg}SRC_DIR${clr_rs}
+        Path to the directory containing directories
+        with audio files for which to create playlists.
+
+    ${clr_arg}DEST_DIR${clr_rs}
+        Path to the directory where the generated playlist
+        files should be placed in.
 
 ${clr_header}OPTIONS${clr_rs}
+    ${clr_arg}--help, -h${clr_rs}
+        Print this help text and exit.
+
     ${clr_arg}--depth, -d DEPTH${clr_rs}
         ${clr_bold}DEFAULT: ${clr_code}1${clr_rs}
         How deeply to create playlists inside each directory.
         For example, let's say we have a ${clr_code}TobyFox/${clr_rs} directory,
-        inside the ${clr_arg}DIRECTORY${clr_rs}; the script would create
+        inside the ${clr_arg}SRC_DIR${clr_rs}; the script would create
         a playlist with all audio files found in the
         directory (recursively). But let's say we also
         have a ${clr_code}TobyFox/Undertale/${clr_rs} directory;
         with ${clr_code}-d 2${clr_rs} a separate ${clr_code}TobyFox-Undertale${clr_rs}
         playlist will be created, otherwise no playlist
         will be created for the nested directory.
-        Note, that a depth of ${clr_code}0${clr_rs} will only create a playlist for ${clr_arg}DIRECTORY${clr_rs}.
+        Note, that a depth of ${clr_code}0${clr_rs} will only create a playlist for ${clr_arg}SRC_DIR${clr_rs}.
 HELP_END
 
     echo "$help_txt"
 }
 
-HELP_TXT="$( gen_help_text )"
-
-echo "$HELP_TXT"
-exit
+function print_help_and_exit {
+    local help_txt="$( gen_help_text )"
+    echo "$help_txt"
+    exit 0
+}
 
 function gen_playlists {
     local playlist_dir="$1"
@@ -69,4 +77,45 @@ function gen_playlists {
     check_dir "$playlist_dir"
 }
 
-gen_playlists "$@"
+function main {
+    echo "MAIN"
+}
+
+function parse_args {
+    local clr_code="$( clr "${CLR_CODE[@]}" )"
+    local clr_rs="$( clrrs )"
+
+    ARG_SRC_DIR=
+    ARG_DEST_DIR=
+    OPT_DEPTH=1
+
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            "--help"|"-h")
+                print_help_and_exit
+                shift
+                ;;
+
+            "--depth"|"-d")
+                [ -z "$2" ] && err "${clr_code}${1}${clr_rs} requires an argument"
+                [[ $2 =~ ^[0-9]+$ ]] || err "${clr_code}${1}${clr_rs} requires an integer argument"
+                OPT_DEPTH="$2"
+                shift; shift
+                ;;
+
+            *)
+                if [ -z "$ARG_SRC_DIR" ]; then
+                    ARG_SRC_DIR="$1"
+                elif [ -z "$ARG_DEST_DIR" ]; then
+                    ARG_DEST_DIR="$1"
+                else
+                    warn "Invalid argument: ${clr_code}${1}${clr_rs}"
+                fi
+                shift
+                ;;
+        esac
+    done
+}
+
+parse_args "$@"
+main "$@"
