@@ -4,62 +4,69 @@
 # with its members being all audio files found within the directory (recursively).
 
 # shellcheck source=./util.sh disable=SC2155
+
+set -e
+
 function _dl_util_sh {
-    local UTIL_VERSION="v2.1.0"
+    local UTIL_VERSION="v2.1.1"
     local dir="$( dirname "$1" )"
     [ -f "${dir}/util.sh" ] || bash "${dir}/download-util.sh" "$UTIL_VERSION" || exit 1
     source "${dir}/util.sh"
 }; _dl_util_sh "$0"
 
 SCRIPT_NAME="$0"
+CLRCODE="$( clr "${CLR_CODE[@]}" )"
+CLRBOLD="$( clrattr "bold" )"
+CLRRS="$( clrrs )"
+
+ARG_SRC_DIR=
+ARG_DEST_DIR=
+OPT_DEPTH=1
 
 function gen_help_text {
     local script_name_display="$(clr "${CLR_CODE[@]}")${SCRIPT_NAME}$(clrrs)"
     local clr_header="$( clr yellow default bold )"
     local clr_arg="$( clrfg cyan )"
-    local clr_code="$( clr "${CLR_CODE[@]}" )"
-    local clr_bold="$( clrattr bold )"
-    local clr_rs="$( clrrs )"
     local help_txt
 
     read -rd '' help_txt <<- HELP_END
 $script_name_display
 
-${clr_header}SYNOPSIS${clr_rs}
-    $script_name_display ${clr_arg}[-d N] SRC_DIR DEST_DIR${clr_rs}
-    $script_name_display ${clr_arg}--help|-h${clr_rs}
+${clr_header}SYNOPSIS${CLRRS}
+    $script_name_display ${clr_arg}[-d N] SRC_DIR DEST_DIR${CLRRS}
+    $script_name_display ${clr_arg}--help|-h${CLRRS}
 
-${clr_header}DESCRIPTION${clr_rs}
+${clr_header}DESCRIPTION${CLRRS}
     Generates a playlist text file for each directory
-    inside the given ${clr_arg}SRC_DIR${clr_rs}.
+    inside the given ${clr_arg}SRC_DIR${CLRRS}.
     The playlist file is simply a text file with each line
     being the full path to an audio file inside the directory (recursively).
 
-${clr_header}ARGUMENTS${clr_rs}
-    ${clr_arg}SRC_DIR${clr_rs}
+${clr_header}ARGUMENTS${CLRRS}
+    ${clr_arg}SRC_DIR${CLRRS}
         Path to the directory containing directories
         with audio files for which to create playlists.
 
-    ${clr_arg}DEST_DIR${clr_rs}
+    ${clr_arg}DEST_DIR${CLRRS}
         Path to the directory where the generated playlist
         files should be placed in.
 
-${clr_header}OPTIONS${clr_rs}
-    ${clr_arg}--help, -h${clr_rs}
+${clr_header}OPTIONS${CLRRS}
+    ${clr_arg}--help, -h${CLRRS}
         Print this help text and exit.
 
-    ${clr_arg}--depth, -d DEPTH${clr_rs}
-        ${clr_bold}DEFAULT: ${clr_code}1${clr_rs}
+    ${clr_arg}--depth, -d DEPTH${CLRRS}
+        ${CLRBOLD}DEFAULT: ${CLRCODE}1${CLRRS}
         How deeply to create playlists inside each directory.
-        For example, let's say we have a ${clr_code}TobyFox/${clr_rs} directory,
-        inside the ${clr_arg}SRC_DIR${clr_rs}; the script would create
+        For example, let's say we have a ${CLRCODE}TobyFox/${CLRRS} directory,
+        inside the ${clr_arg}SRC_DIR${CLRRS}; the script would create
         a playlist with all audio files found in the
         directory (recursively). But let's say we also
-        have a ${clr_code}TobyFox/Undertale/${clr_rs} directory;
-        with ${clr_code}-d 2${clr_rs} a separate ${clr_code}TobyFox-Undertale${clr_rs}
+        have a ${CLRCODE}TobyFox/Undertale/${CLRRS} directory;
+        with ${CLRCODE}-d 2${CLRRS} a separate ${CLRCODE}TobyFox-Undertale${CLRRS}
         playlist will be created, otherwise no playlist
         will be created for the nested directory.
-        Note, that a depth of ${clr_code}0${clr_rs} will only create a playlist for ${clr_arg}SRC_DIR${clr_rs}.
+        Note, that a depth of ${CLRCODE}0${CLRRS} will only create a playlist for ${clr_arg}SRC_DIR${CLRRS}.
 HELP_END
 
     echo "$help_txt"
@@ -71,24 +78,7 @@ function print_help_and_exit {
     exit 0
 }
 
-function gen_playlists {
-    local playlist_dir="$1"
-
-    check_dir "$playlist_dir"
-}
-
-function main {
-    echo "MAIN"
-}
-
 function parse_args {
-    local clr_code="$( clr "${CLR_CODE[@]}" )"
-    local clr_rs="$( clrrs )"
-
-    ARG_SRC_DIR=
-    ARG_DEST_DIR=
-    OPT_DEPTH=1
-
     while [ $# -gt 0 ]; do
         case "$1" in
             "--help"|"-h")
@@ -97,8 +87,8 @@ function parse_args {
                 ;;
 
             "--depth"|"-d")
-                [ -z "$2" ] && err "${clr_code}${1}${clr_rs} requires an argument"
-                [[ $2 =~ ^[0-9]+$ ]] || err "${clr_code}${1}${clr_rs} requires an integer argument"
+                [ -z "$2" ] && err "${CLRCODE}${1}${CLRRS} requires an argument"
+                [[ $2 =~ ^[0-9]+$ ]] || err "${CLRCODE}${1}${CLRRS} requires an integer argument"
                 OPT_DEPTH="$2"
                 shift; shift
                 ;;
@@ -109,12 +99,20 @@ function parse_args {
                 elif [ -z "$ARG_DEST_DIR" ]; then
                     ARG_DEST_DIR="$1"
                 else
-                    warn "Invalid argument: ${clr_code}${1}${clr_rs}"
+                    warn "Invalid argument: ${CLRCODE}${1}${CLRRS}"
                 fi
                 shift
                 ;;
         esac
     done
+}
+
+function main {
+    check_dir "$ARG_SRC_DIR"
+    [ -d "${ARG_DEST_DIR}" ] || {
+        msg "Creating new destination directory at ${CLRCODE}${ARG_DEST_DIR}${CLRRS}"
+        mkdir -p "${ARG_DEST_DIR}"
+    }
 }
 
 parse_args "$@"
