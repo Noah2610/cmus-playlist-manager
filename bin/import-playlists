@@ -10,6 +10,8 @@ unset _dir
 
 SCRIPT_NAME="$0"
 
+ARG_DIR=
+
 check "cmus"
 check "cmus-remote"
 
@@ -48,8 +50,35 @@ function print_help_and_exit {
     exit 0
 }
 
+function parse_args {
+    ARG_DIR=
+
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            "--help"|"-h")
+                print_help_and_exit
+                shift
+                ;;
+
+            *)
+                [ -n "$ARG_DIR" ] && err "${CLRCODE}PLAYLISTS_DIR${CLRRS} argument can only be given once"
+                ARG_DIR="$1"
+                shift
+                ;;
+        esac
+    done
+}
+
 function main {
-    print_help_and_exit
+    parse_args "$@"
+    verify_args
+    # import_playlists
+}
+
+function verify_args {
+    [ -z "$ARG_DIR" ] \
+        && err "${CLRCODE}PLAYLISTS_DIR${CLRRS} must be given (first argument)"
+    check_dir "$ARG_DIR"
 }
 
 main "$@"
