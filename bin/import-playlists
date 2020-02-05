@@ -12,6 +12,7 @@ SCRIPT_NAME="$0"
 CMUS_DISPLAY="${CLRCODE}cmus${CLRRS}"
 
 ARG_DIR=
+ARG_DELETE=0
 
 check "find"
 check "cmus"
@@ -25,13 +26,12 @@ function gen_help_text {
 $script_name_display
 
 ${CLRHEADER}SYNOPSIS${CLRRS}
-    $script_name_display ${CLRARG}PLAYLISTS_DIR${CLRRS}
+    $script_name_display ${CLRARG}[-D] PLAYLISTS_DIR${CLRRS}
     $script_name_display ${CLRARG}--help|-h${CLRRS}
 
 ${CLRHEADER}DESCRIPTION${CLRRS}
-    Using ${CLRCODE}cmus-remote${CLRRS}, first delete all existing
-    ${CMUS_DISPLAY} playlists, then import all playlist files
-    in ${CLRARG}PLAYLISTS_DIR${CLRRS} (recursively) into ${CMUS_DISPLAY}.
+    Using ${CLRCODE}cmus-remote${CLRRS}, import all playlist files
+    found in ${CLRARG}PLAYLISTS_DIR${CLRRS} (recursively) into ${CMUS_DISPLAY}.
 
 ${CLRHEADER}ARGUMENTS${CLRRS}
     ${CLRARG}PLAYLISTS_DIR${CLRRS}
@@ -40,6 +40,10 @@ ${CLRHEADER}ARGUMENTS${CLRRS}
 ${CLRHEADER}OPTIONS${CLRRS}
     ${CLRARG}--help, -h${CLRRS}
         Print this help text and exit.
+
+    ${CLRARG}--delete, -D${CLRRS}
+        Before importing playlists,
+        delete all existing ${CMUS_DISPLAY} playlists.
 HELP_END
 
     echo "$help_txt"
@@ -53,6 +57,7 @@ function print_help_and_exit {
 
 function parse_args {
     ARG_DIR=
+    ARG_DELETE=0
 
     while [ $# -gt 0 ]; do
         case "$1" in
@@ -61,9 +66,22 @@ function parse_args {
                 shift
                 ;;
 
-            *)
-                [ -n "$ARG_DIR" ] && err "${CLRCODE}PLAYLISTS_DIR${CLRRS} argument can only be given once"
+            "--delete"|"-D")
+                is_positive "$ARG_DELETE" \
+                    && warn "${CLRCODE}${1}${CLRRS} given more than once; this has no additional effect"
+                ARG_DELETE=1
+                shift
+                ;;
+
+            [^-]*)
+                [ -n "$ARG_DIR" ] \
+                    && err "${CLRCODE}PLAYLISTS_DIR${CLRRS} argument can only be given once"
                 ARG_DIR="$1"
+                shift
+                ;;
+
+            *)
+                warn "Invalid argument ${CLRCODE}${1}${CLRRS}"
                 shift
                 ;;
         esac

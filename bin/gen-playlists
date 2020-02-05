@@ -99,14 +99,18 @@ function parse_args {
                 shift; shift
                 ;;
 
-            *)
+            [^-]*)
                 if [ -z "$ARG_SRC_DIR" ]; then
                     ARG_SRC_DIR="$1"
                 elif [ -z "$ARG_DEST_DIR" ]; then
                     ARG_DEST_DIR="$1"
                 else
-                    warn "Invalid argument: ${CLRCODE}${1}${CLRRS}"
+                    warn "Invalid argument ${CLRCODE}${1}${CLRRS}"
                 fi
+                shift
+                ;;
+            *)
+                warn "Invalid argument ${CLRCODE}${1}${CLRRS}"
                 shift
                 ;;
         esac
