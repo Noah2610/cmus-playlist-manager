@@ -4,19 +4,17 @@
 # with its members being all audio files found within the directory (recursively).
 
 # shellcheck source=./share.sh disable=SC2155
-SCRIPT_NAME="$( realpath "$0" )"
-_dir="$( dirname "$SCRIPT_NAME" )"
+SCRIPT_PATH="$( realpath "$0" )"
+_dir="$( dirname "$SCRIPT_PATH" )"
 source "${_dir}/share.sh"
 unset _dir
 
-CLRCODE="$( clr "${CLR_CODE[@]}" )"
-CLRBOLD="$( clrattr "bold" )"
-CLRRS="$( clrrs )"
+SCRIPT_NAME="$0"
+
 AUDIO_EXTS=( "mp3" "wav" "ogg" )
 _find_ext_iname='-iname *.'
 AUDIO_EXTS_FIND="${_find_ext_iname}$( join_by " -o ${_find_ext_iname}" "${AUDIO_EXTS[@]}" )"
 unset _find_ext_iname
-PLAYLIST_EXT="pl"
 
 ARG_SRC_DIR=
 ARG_DEST_DIR=

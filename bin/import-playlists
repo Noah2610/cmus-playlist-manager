@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# shellcheck source=./share.sh disable=SC2155
+SCRIPT_NAME="$( realpath "$0" )"
+_dir="$( dirname "$SCRIPT_NAME" )"
+source "${_dir}/share.sh"
+unset _dir
+
+check "cmus"
+check "cmus-remote"
