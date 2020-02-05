@@ -13,8 +13,43 @@ SCRIPT_NAME="$0"
 check "cmus"
 check "cmus-remote"
 
+function gen_help_text {
+    local script_name_display="$(clr "${CLR_CODE[@]}")${SCRIPT_NAME}$(clrrs)"
+    local cmus_display="${CLRCODE}cmus${CLRRS}"
+    local help_txt
+
+    read -rd '' help_txt <<- HELP_END
+$script_name_display
+
+${CLRHEADER}SYNOPSIS${CLRRS}
+    $script_name_display ${CLRARG}PLAYLISTS_DIR${CLRRS}
+    $script_name_display ${CLRARG}--help|-h${CLRRS}
+
+${CLRHEADER}DESCRIPTION${CLRRS}
+    Using ${CLRCODE}cmus-remote${CLRRS}, first delete all existing
+    ${cmus_display} playlists, then import all playlist files
+    in ${CLRARG}PLAYLISTS_DIR${CLRRS} (recursively) into ${cmus_display}.
+
+${CLRHEADER}ARGUMENTS${CLRRS}
+    ${CLRARG}PLAYLISTS_DIR${CLRRS}
+        Path to the directory where the playlist files are.
+
+${CLRHEADER}OPTIONS${CLRRS}
+    ${CLRARG}--help, -h${CLRRS}
+        Print this help text and exit.
+HELP_END
+
+    echo "$help_txt"
+}
+
+function print_help_and_exit {
+    local help_txt="$( gen_help_text )"
+    echo "$help_txt"
+    exit 0
+}
+
 function main {
-    echo
+    print_help_and_exit
 }
 
 main "$@"
