@@ -42,6 +42,7 @@ ${CLRHEADER}OPTIONS${CLRRS}
         Print this help text and exit.
 
     ${CLRARG}--delete, -D${CLRRS}
+        ${CLRBOLD}UNIMPLEMENTED${CLRRS}
         Before importing playlists,
         delete all existing ${CMUS_DISPLAY} playlists.
 HELP_END
@@ -99,9 +100,36 @@ function check_cmus_running {
         || err "${CMUS_DISPLAY} isn't running"
 }
 
+# TODO
+function delete_cmus_playlists {
+    warn "Deleting existing ${CMUS_DISPLAY} playlists is not implemented..."
+
+    # cmus_switch_to_playlists_view
+    # msg "Deleting existing cmus playlists"
+
+    # Here are some command ideas I was playing with:
+
+    # This works, but relies on `cmus` being run
+    # in a very specifically named `tmux` session/window/pane.
+    # We need to send the "y" keypress to confirm deletion.
+    # ```
+    # echo "win-remove" \
+    #     | cmus-remote & \
+    #     tmux send-keys -t "music:cmus.0" "y"
+    # ```
+
+    # This only removes all songs from a playlist,
+    # and leaves the empty playlist behind.
+    # ```
+    # cmus-remote <<-END
+    #     mark
+    #     win-remove
+    # END
+    # ```
+}
+
 function import_playlists {
-    # Switch to view 3 (playlists)
-    cmus-remote -C "view 3"
+    cmus_switch_to_playlists_view
 
     local playlist_file
     while IFS= read -rd '' playlist_file; do
@@ -109,11 +137,16 @@ function import_playlists {
     done < <(find "$ARG_DIR" -type f -iname "*.${PLAYLIST_EXT}" -print0)
 }
 
+function cmus_switch_to_playlists_view {
+    cmus-remote -C "view 3"
+}
+
 function main {
     parse_args "$@"
     verify_args
     check_cmus_running
-    import_playlists
+    is_positive "$ARG_DELETE" && delete_cmus_playlists
+    # import_playlists
 }
 
 main "$@"
