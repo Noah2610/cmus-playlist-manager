@@ -133,8 +133,25 @@ function import_playlists {
 
     local playlist_file
     while IFS= read -rd '' playlist_file; do
-        echo "$playlist_file"
+        import_playlist_from_file "$playlist_file"
     done < <(find "$ARG_DIR" -type f -iname "*.${PLAYLIST_EXT}" -print0)
+}
+
+function import_playlist_from_file {
+    local playlist_file=$( realpath "$1" )
+    local playlist_name="$( basename "${playlist_file/\.${PLAYLIST_EXT}/}" )"
+    check_file "$playlist_file"
+    msg "Importing playlist ${CLRCODE}${playlist_name}${CLRRS}"
+
+    # shellcheck disable=SC2178
+    local cmd="
+        pl-import $playlist_file
+        /${playlist_name}
+        pl-rename $playlist_name
+    "
+
+    # shellcheck disable=SC2128
+    echo "$cmd" | cmus-remote
 }
 
 function cmus_switch_to_playlists_view {
@@ -146,7 +163,7 @@ function main {
     verify_args
     check_cmus_running
     is_positive "$ARG_DELETE" && delete_cmus_playlists
-    # import_playlists
+    import_playlists
 }
 
 main "$@"

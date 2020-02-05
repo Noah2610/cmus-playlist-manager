@@ -141,13 +141,15 @@ function gen_playlist_from_dir {
     local src_dir_repl="$( dirname "$ARG_SRC_DIR" )/"
     local playlist_name="${playlist_src/$src_dir_repl/}"
     local playlist_dest="${ARG_DEST_DIR}/${playlist_name}.${PLAYLIST_EXT}"
+    local src_prefix=""
+    is_relative_path "$playlist_src" && src_prefix="$( pwd -P )/"
 
     mkdir -p "$( dirname "$playlist_dest" )"
 
     local audio_files
     # shellcheck disable=SC2086
     mapfile -t audio_files < <(
-        find "${playlist_src}" \
+        find "${src_prefix}${playlist_src}" \
             -type f \
             \( ${AUDIO_EXTS_FIND} \)
     )
