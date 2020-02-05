@@ -81,6 +81,10 @@ function print_help_and_exit {
 }
 
 function parse_args {
+    ARG_SRC_DIR=
+    ARG_DEST_DIR=
+    OPT_DEPTH=1
+
     [ $# -eq 0 ] && print_help_and_exit
 
     while [ $# -gt 0 ]; do
