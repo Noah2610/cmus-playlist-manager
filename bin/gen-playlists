@@ -4,10 +4,7 @@
 # with its members being all audio files found within the directory (recursively).
 
 # shellcheck source=./share.sh disable=SC2155
-
 SCRIPT_NAME="$( realpath "$0" )"
-
-# shellcheck source=./share.sh
 _dir="$( dirname "$SCRIPT_NAME" )"
 source "${_dir}/share.sh"
 unset _dir
