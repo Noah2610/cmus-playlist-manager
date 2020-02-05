@@ -85,8 +85,6 @@ function parse_args {
     ARG_DEST_DIR=
     OPT_DEPTH=1
 
-    [ $# -eq 0 ] && print_help_and_exit
-
     while [ $# -gt 0 ]; do
         case "$1" in
             "--help"|"-h")
@@ -122,6 +120,10 @@ function main {
 }
 
 function verify_args {
+    [ -z "$ARG_SRC_DIR" ] \
+        && err "${CLRCODE}SRC_DIR${CLRRS} must be given (first argument)"
+    [ -z "$ARG_DEST_DIR" ] \
+        && err "${CLRCODE}DEST_DIR${CLRRS} must be given (second argument)"
     check_dir "$ARG_SRC_DIR"
     [ -d "${ARG_DEST_DIR}" ] || {
         msg "Creating new destination directory at ${CLRCODE}${ARG_DEST_DIR}${CLRRS}"
