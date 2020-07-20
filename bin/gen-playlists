@@ -152,7 +152,8 @@ function gen_playlist_from_dir {
         find -L \
             "${src_prefix}${playlist_src}" \
             \( -type f -o -type l \) \
-            ${AUDIO_EXTS_FIND}
+            ${AUDIO_EXTS_FIND} \
+            | xargs realpath
     )
 
     # Write playlist files
