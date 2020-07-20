@@ -149,9 +149,10 @@ function gen_playlist_from_dir {
     local audio_files
     # shellcheck disable=SC2086
     mapfile -t audio_files < <(
-        find "${src_prefix}${playlist_src}" \
-            -type f \
-            \( ${AUDIO_EXTS_FIND} \)
+        find -L \
+            "${src_prefix}${playlist_src}" \
+            \( -type f -o -type l \) \
+            ${AUDIO_EXTS_FIND}
     )
 
     # Write playlist files
